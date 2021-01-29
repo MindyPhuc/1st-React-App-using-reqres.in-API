@@ -1,24 +1,32 @@
-import logo from './logo.svg';
+import {useEffect, useState} from 'react';
+
 import './App.css';
 
+import load from './users';
+import Profiles from './Profiles';
+import Paging from './Paging';
+
+
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [users, setUsers] = useState([]);
+
+  // useEffect(function, [list of dependencies])
+  useEffect(()=>{
+    load(currentPage).then(result=>{
+      setCurrentPage(result.page);
+      setTotalPages(result.total_pages);
+      setUsers(result.data);
+    });
+  },[currentPage]);  // re-run the effect when the currentPage is changed
+
+  const handlePageChange = (newPage) => setCurrentPage(newPage);
+  return ( 
+    <div className = "App" >
+      <Paging current = {currentPage} total = {totalPages} onPageChange={handlePageChange}/>
+      <Profiles className="profiles" users = {users}/>
+    </div >
   );
 }
 
